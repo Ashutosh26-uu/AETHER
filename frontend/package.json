@@ -4,15 +4,7 @@
   "private": true,
   "dependencies": {
     "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-router-dom": "^6.8.0",
-    "recharts": "^2.8.0",
-    "lucide-react": "^0.294.0",
-    "framer-motion": "^10.16.0",
-    "react-spring": "^9.7.0",
-    "react-gauge-chart": "^0.4.1",
-    "react-leaflet": "^4.2.1",
-    "leaflet": "^1.9.4"
+    "react-dom": "^18.2.0"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -21,11 +13,11 @@
     "eject": "react-scripts eject"
   },
   "devDependencies": {
-    "react-scripts": "5.0.1",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
     "autoprefixer": "^10.4.16",
-    "postcss": "^8.4.31"
+    "postcss": "^8.4.31",
+    "react-scripts": "^5.0.1"
   },
   "browserslist": {
     "production": [

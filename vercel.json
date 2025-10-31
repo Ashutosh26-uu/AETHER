@@ -2,25 +2,18 @@
   "version": 2,
   "builds": [
     {
-      "src": "backend/api/index.py",
+      "src": "backend/universal_backend.py",
       "use": "@vercel/python"
-    },
-    {
-      "src": "frontend/package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "build"
-      }
     }
   ],
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "/backend/api/index.py"
+      "dest": "/backend/universal_backend.py"
     },
     {
       "src": "/(.*)",
-      "dest": "/frontend/$1"
+      "dest": "/backend/universal_backend.py"
     }
   ]
 }

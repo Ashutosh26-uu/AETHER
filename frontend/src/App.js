@@ -1,11 +1,11 @@
 import React from 'react';
 import './App.css';
-import DynamicDeviceDashboard from './DynamicDeviceDashboard';
+import SafeDynamicDashboard from './SafeDynamicDashboard';
 
 function App() {
   return (
     <div className="App">
-      <DynamicDeviceDashboard />
+      <SafeDynamicDashboard />
     </div>
   );
 }
