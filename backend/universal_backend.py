@@ -5,6 +5,7 @@ import json
 import asyncio
 from datetime import datetime
 from universal_device_analyzer import UniversalDeviceAnalyzer
+from dynamic_device_detector import DynamicDeviceDetector
 
 app = FastAPI(title="AETHER Universal Device Health Monitor")
 
@@ -16,43 +17,56 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Initialize universal analyzer
+# Initialize dynamic detector and universal analyzer
+detector = DynamicDeviceDetector()
 analyzer = UniversalDeviceAnalyzer()
 
 @app.get("/")
 async def root():
-    device_info = analyzer.device_info
-    vehicle_type = analyzer.device_config["vehicle_analogy"]
+    device_data = detector.get_comprehensive_device_data()
+    device_info = device_data['device_info']
+    manufacturer = device_data['manufacturer_info']
+    vehicle_type = device_data['device_config']['vehicle_analogy']
     
     return HTMLResponse(f"""
     <html>
-        <head><title>AETHER Universal Device Monitor</title></head>
+        <head><title>AETHER Dynamic Device Monitor</title></head>
         <body style="font-family: Arial; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
-            <h1>🌐 AETHER Universal Device Health Monitor</h1>
+            <h1>🌐 AETHER Dynamic Device Health Monitor</h1>
             <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px; margin: 20px 0;">
                 <h2>📱 Detected Device</h2>
-                <p><strong>Type:</strong> {device_info['type'].title()}</p>
-                <p><strong>System:</strong> {device_info['system'].title()}</p>
-                <p><strong>Category:</strong> {device_info['category'].title()}</p>
+                <p><strong>Type:</strong> {device_info['type'].replace('_', ' ').title()}</p>
+                <p><strong>Category:</strong> {device_info['category'].replace('_', ' ').title()}</p>
+                <p><strong>Subcategory:</strong> {device_info['subcategory'].replace('_', ' ').title()}</p>
+                <p><strong>Manufacturer:</strong> {manufacturer['brand']}</p>
+                <p><strong>Model:</strong> {manufacturer['model']}</p>
+                <p><strong>Form Factor:</strong> {device_info['form_factor'].replace('_', ' ').title()}</p>
+                <p><strong>Mobility:</strong> {device_info['mobility'].title()}</p>
+                <p><strong>Power Source:</strong> {device_info['power_source'].replace('_', ' ').title()}</p>
                 <p><strong>Vehicle Analogy:</strong> {vehicle_type}</p>
                 <p><strong>Device ID:</strong> {device_info['device_id']}</p>
             </div>
             
             <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px; margin: 20px 0;">
-                <h2>🔧 Device-Specific Features</h2>
-                <p>✅ Adaptive health thresholds based on device type</p>
-                <p>✅ Device-specific temperature monitoring</p>
-                <p>✅ Custom vehicle analogies per device</p>
-                <p>✅ Platform-optimized performance analysis</p>
-                <p>✅ Real-time health recommendations</p>
+                <h2>🔧 Dynamic Features</h2>
+                <p>✅ Advanced device type detection (Mobile, IoT, Automotive)</p>
+                <p>✅ Manufacturer identification and optimization</p>
+                <p>✅ Adaptive health thresholds per device category</p>
+                <p>✅ Device-specific vehicle analogies</p>
+                <p>✅ Form factor and mobility awareness</p>
+                <p>✅ Power source optimization</p>
+                <p>✅ Real-time capability detection</p>
             </div>
             
             <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px;">
                 <h2>🌐 API Endpoints</h2>
                 <p>📊 <a href="/api/device-health" style="color: #FFD700;">Device Health Data</a></p>
-                <p>🔍 <a href="/api/device-info" style="color: #FFD700;">Device Information</a></p>
+                <p>🔍 <a href="/api/device-detection" style="color: #FFD700;">Dynamic Device Detection</a></p>
+                <p>🏭 <a href="/api/manufacturer-info" style="color: #FFD700;">Manufacturer Information</a></p>
                 <p>📈 <a href="/api/health-analysis" style="color: #FFD700;">Health Analysis</a></p>
                 <p>🚗 <a href="/api/vehicle-analogy" style="color: #FFD700;">Vehicle Analogy Data</a></p>
+                <p>⚙️ <a href="/api/device-capabilities" style="color: #FFD700;">Device Capabilities</a></p>
+                <p>💡 <a href="/api/optimization-tips" style="color: #FFD700;">Optimization Tips</a></p>
                 <p>📖 <a href="/docs" style="color: #FFD700;">API Documentation</a></p>
                 <p>📡 WebSocket: ws://localhost:8000/ws</p>
             </div>
@@ -67,12 +81,37 @@ async def get_device_health():
 
 @app.get("/api/device-info")
 async def get_device_info():
-    """Get detected device information"""
+    """Get detected device information (legacy endpoint)"""
     return {
         "device_info": analyzer.device_info,
         "device_config": analyzer.device_config,
         "supported_metrics": analyzer.device_config["health_metrics"],
         "vehicle_analogy": analyzer.device_config["vehicle_analogy"]
+    }
+
+@app.get("/api/device-detection")
+async def get_device_detection():
+    """Get comprehensive dynamic device detection data"""
+    return detector.get_comprehensive_device_data()
+
+@app.get("/api/manufacturer-info")
+async def get_manufacturer_info():
+    """Get manufacturer information"""
+    return detector.manufacturer_info
+
+@app.get("/api/device-capabilities")
+async def get_device_capabilities():
+    """Get device capabilities"""
+    return detector.get_device_capabilities()
+
+@app.get("/api/optimization-tips")
+async def get_optimization_tips():
+    """Get device-specific optimization tips"""
+    return {
+        "device_type": detector.device_info["type"],
+        "manufacturer": detector.manufacturer_info["brand"],
+        "optimization_tips": detector.get_optimization_tips(),
+        "recommended_features": detector.get_recommended_features()
     }
 
 @app.get("/api/health-analysis")
@@ -141,14 +180,9 @@ async def websocket_endpoint(websocket: WebSocket):
             data = analyzer.get_device_health_data()
             await websocket.send_text(json.dumps(data))
             
-            # Adaptive update frequency based on device type
-            device_type = analyzer.device_info["type"]
-            if device_type in ["tablet", "android_device"]:
-                await asyncio.sleep(3)  # Slower updates for mobile devices
-            elif device_type == "raspberry_pi":
-                await asyncio.sleep(5)  # Even slower for IoT devices
-            else:
-                await asyncio.sleep(2)  # Standard for computers
+            # Adaptive update frequency based on device configuration
+            update_interval = detector.device_config["update_interval"]
+            await asyncio.sleep(update_interval)
     except:
         pass
 
@@ -156,14 +190,29 @@ if __name__ == "__main__":
     import uvicorn
     
     device_info = analyzer.device_info
-    print("🌐 AETHER Universal Device Health Monitor")
-    print("=" * 50)
-    print(f"📱 Detected Device: {device_info['type'].title()}")
-    print(f"🖥️ System: {device_info['system'].title()}")
-    print(f"🚗 Vehicle Analogy: {analyzer.device_config['vehicle_analogy']}")
-    print(f"📊 Health Metrics: {', '.join(analyzer.device_config['health_metrics'])}")
-    print("\n✅ Starting universal health monitor...")
-    print("🌐 Works on: Laptops, Desktops, Tablets, Raspberry Pi, Android, IoT devices")
+    device_data = detector.get_comprehensive_device_data()
+    device_info = device_data['device_info']
+    manufacturer = device_data['manufacturer_info']
+    
+    print("🌐 AETHER Dynamic Device Health Monitor")
+    print("=" * 60)
+    print(f"📱 Device Type: {device_info['type'].replace('_', ' ').title()}")
+    print(f"🏭 Manufacturer: {manufacturer['brand']} {manufacturer['model']}")
+    print(f"🖥️ System: {device_info['system'].title()} ({device_info['architecture']})")
+    print(f"📦 Form Factor: {device_info['form_factor'].replace('_', ' ').title()}")
+    print(f"🔋 Power Source: {device_info['power_source'].replace('_', ' ').title()}")
+    print(f"🚗 Vehicle Analogy: {device_data['device_config']['vehicle_analogy']}")
+    print(f"📊 Health Metrics: {', '.join(device_data['device_config']['health_metrics'])}")
+    print(f"⚡ Update Interval: {device_data['device_config']['update_interval']}s")
+    
+    print("\n🎯 Device Capabilities:")
+    capabilities = detector.get_device_capabilities()
+    for capability, value in capabilities.items():
+        status = "✅" if value else "❌"
+        print(f"  {status} {capability.replace('_', ' ').title()}")
+    
+    print("\n✅ Starting dynamic health monitor...")
+    print("🌐 Supports: Mobile, IoT, Automotive, Desktop, Laptop devices")
     print("📱 Frontend: http://localhost:3000")
     print("🖥️ Backend: http://localhost:8000")
     

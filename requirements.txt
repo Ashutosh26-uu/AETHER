@@ -8,38 +8,8 @@ psycopg2-binary==2.9.9
 pymongo==4.6.0
 redis==5.0.1
 
-# AI/ML Dependencies
-tensorflow==2.15.0
-torch==2.1.0
-torchvision==0.16.0
-opencv-python==4.8.1.78
-scikit-learn==1.3.2
-numpy==1.24.3
-pandas==2.1.4
-ultralytics==8.0.206
-
-# IoT and Hardware
-paho-mqtt==1.6.1
-pyserial==3.5
-RPi.GPIO==0.7.1
-adafruit-circuitpython-gps==3.9.2
-
-# Satellite and Mapping
-geopy==2.4.1
-folium==0.15.0
-geopandas==0.14.1
-rasterio==1.3.9
-
-# Cloud and Security
-boto3==1.34.0
-azure-iot-device==2.12.0
-cryptography==41.0.8
-PyJWT==2.8.0
-web3==6.12.0
-
-# Drone Integration
-pymavlink==2.4.37
-dronekit==2.9.2
+# System monitoring
+psutil>=5.9.0
 
 # Utilities
 python-dotenv==1.0.0
