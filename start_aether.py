@@ -31,7 +31,7 @@ def print_banner():
 
 def check_dependencies():
     """Check if required dependencies are installed"""
-    print("🔍 Checking dependencies...")
+    print("Checking dependencies...")
     
     # Check Python packages
     required_packages = [
@@ -42,30 +42,30 @@ def check_dependencies():
     for package in required_packages:
         try:
             __import__(package)
-            print(f"  ✅ {package}")
+            print(f"  OK {package}")
         except ImportError:
             missing_packages.append(package)
-            print(f"  ❌ {package}")
+            print(f"  MISSING {package}")
     
     if missing_packages:
-        print(f"\n⚠️  Missing packages: {', '.join(missing_packages)}")
+        print(f"\nMissing packages: {', '.join(missing_packages)}")
         print("Installing missing packages...")
         try:
             subprocess.check_call([
                 sys.executable, "-m", "pip", "install", "-r", "requirements.txt"
             ], timeout=300)
-            print("✅ Dependencies installed successfully!")
+            print("Dependencies installed successfully!")
         except (subprocess.CalledProcessError, subprocess.TimeoutExpired) as e:
-            print(f"❌ Failed to install dependencies: {e}")
+            print(f"Failed to install dependencies: {e}")
             return False
     
     # Check Node.js and npm for frontend
     try:
         subprocess.run(["node", "--version"], check=True, capture_output=True, timeout=10)
         subprocess.run(["npm", "--version"], check=True, capture_output=True, timeout=10)
-        print("  ✅ Node.js and npm")
+        print("  OK Node.js and npm")
     except (subprocess.CalledProcessError, FileNotFoundError, subprocess.TimeoutExpired):
-        print("  ❌ Node.js/npm not found. Please install Node.js")
+        print("  MISSING Node.js/npm not found. Please install Node.js")
         return False
     
     return True
@@ -77,7 +77,7 @@ def install_frontend_dependencies():
         print("❌ Frontend directory not found!")
         return False
     
-    print("📦 Installing frontend dependencies...")
+    print("Installing frontend dependencies...")
     try:
         subprocess.run(
             ["npm", "install"], 
@@ -86,15 +86,15 @@ def install_frontend_dependencies():
             capture_output=True,
             timeout=300
         )
-        print("✅ Frontend dependencies installed!")
+        print("Frontend dependencies installed!")
         return True
     except (subprocess.CalledProcessError, subprocess.TimeoutExpired) as e:
-        print(f"❌ Failed to install frontend dependencies: {e}")
+        print(f"Failed to install frontend dependencies: {e}")
         return False
 
 def start_backend():
     """Start the AETHER backend"""
-    print("🚀 Starting AETHER Backend...")
+    print("Starting AETHER Backend...")
     backend_path = Path("backend")
     
     try:
@@ -111,24 +111,24 @@ def start_backend():
         time.sleep(3)
         
         if process.poll() is None:  # Process is still running
-            print("✅ Backend started successfully!")
-            print("🌐 Backend URL: http://localhost:8000")
-            print("📡 WebSocket: ws://localhost:8000/ws")
+            print("Backend started successfully!")
+            print("Backend URL: http://localhost:8000")
+            print("WebSocket: ws://localhost:8000/ws")
             return process
         else:
             stdout, stderr = process.communicate()
-            print(f"❌ Backend failed to start:")
+            print(f"Backend failed to start:")
             print(f"STDOUT: {stdout}")
             print(f"STDERR: {stderr}")
             return None
             
     except Exception as e:
-        print(f"❌ Error starting backend: {e}")
+        print(f"Error starting backend: {e}")
         return None
 
 def start_frontend():
     """Start the AETHER frontend"""
-    print("🎨 Starting AETHER Frontend...")
+    print("Starting AETHER Frontend...")
     frontend_path = Path("frontend")
     
     try:
@@ -145,23 +145,23 @@ def start_frontend():
         time.sleep(5)
         
         if process.poll() is None:  # Process is still running
-            print("✅ Frontend started successfully!")
-            print("🖥️  Frontend URL: http://localhost:3000")
+            print("Frontend started successfully!")
+            print("Frontend URL: http://localhost:3000")
             return process
         else:
             stdout, stderr = process.communicate()
-            print(f"❌ Frontend failed to start:")
+            print(f"Frontend failed to start:")
             print(f"STDOUT: {stdout}")
             print(f"STDERR: {stderr}")
             return None
             
     except Exception as e:
-        print(f"❌ Error starting frontend: {e}")
+        print(f"Error starting frontend: {e}")
         return None
 
 def monitor_processes(backend_process, frontend_process):
     """Monitor both processes and restart if needed"""
-    print("\n👁️  Monitoring AETHER system...")
+    print("\nMonitoring AETHER system...")
     print("Press Ctrl+C to stop the system")
     
     try:
@@ -170,16 +170,16 @@ def monitor_processes(backend_process, frontend_process):
             
             # Check backend
             if backend_process and backend_process.poll() is not None:
-                print("⚠️  Backend process stopped. Restarting...")
+                print("Backend process stopped. Restarting...")
                 backend_process = start_backend()
             
             # Check frontend
             if frontend_process and frontend_process.poll() is not None:
-                print("⚠️  Frontend process stopped. Restarting...")
+                print("Frontend process stopped. Restarting...")
                 frontend_process = start_frontend()
                 
     except KeyboardInterrupt:
-        print("\n🛑 Shutting down AETHER system...")
+        print("\nShutting down AETHER system...")
         
         if backend_process:
             try:
@@ -187,7 +187,7 @@ def monitor_processes(backend_process, frontend_process):
                 backend_process.wait(timeout=5)
             except subprocess.TimeoutExpired:
                 backend_process.kill()
-            print("✅ Backend stopped")
+            print("Backend stopped")
             
         if frontend_process:
             try:
@@ -195,9 +195,9 @@ def monitor_processes(backend_process, frontend_process):
                 frontend_process.wait(timeout=5)
             except subprocess.TimeoutExpired:
                 frontend_process.kill()
-            print("✅ Frontend stopped")
+            print("Frontend stopped")
             
-        print("👋 AETHER system shutdown complete!")
+        print("AETHER system shutdown complete!")
 
 def main():
     """Main function to start the unified AETHER system"""
@@ -205,13 +205,13 @@ def main():
     
     # Check if we're in the right directory
     if not Path("backend").exists() or not Path("frontend").exists():
-        print("❌ Please run this script from the AETHER root directory")
+        print("Please run this script from the AETHER root directory")
         print("   Expected structure: AETHER/backend/ and AETHER/frontend/")
         return
     
     # Check dependencies
     if not check_dependencies():
-        print("❌ Dependency check failed. Please install required packages.")
+        print("Dependency check failed. Please install required packages.")
         return
     
     # Install frontend dependencies if needed
@@ -220,13 +220,13 @@ def main():
             return
     
     print("\n" + "="*80)
-    print("🚀 Starting AETHER Unified System...")
+    print("Starting AETHER Unified System...")
     print("="*80)
     
     # Start backend
     backend_process = start_backend()
     if not backend_process:
-        print("❌ Failed to start backend. Exiting.")
+        print("Failed to start backend. Exiting.")
         return
     
     # Wait a moment for backend to fully initialize
@@ -235,17 +235,17 @@ def main():
     # Start frontend
     frontend_process = start_frontend()
     if not frontend_process:
-        print("❌ Failed to start frontend. Stopping backend.")
+        print("Failed to start frontend. Stopping backend.")
         backend_process.terminate()
         return
     
     print("\n" + "="*80)
-    print("✅ AETHER System Started Successfully!")
+    print("AETHER System Started Successfully!")
     print("="*80)
-    print("🌐 Backend:  http://localhost:8000")
-    print("🖥️  Frontend: http://localhost:3000")
-    print("📚 API Docs: http://localhost:8000/docs")
-    print("📡 WebSocket: ws://localhost:8000/ws")
+    print("Backend:  http://localhost:8000")
+    print("Frontend: http://localhost:3000")
+    print("API Docs: http://localhost:8000/docs")
+    print("WebSocket: ws://localhost:8000/ws")
     print("="*80)
     
     # Monitor processes

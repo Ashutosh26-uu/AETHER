@@ -626,18 +626,18 @@ def start_frontend():
         print("Please manually run: cd frontend && npm start")
 
 if __name__ == "__main__":
-    print("🌐 Starting AETHER: AI-Powered Satellite-Integrated Intelligent Mobility System")
+    print("Starting AETHER: AI-Powered Satellite-Integrated Intelligent Mobility System")
     print("=" * 80)
     device_info = device_manager.get_system_summary()
-    print(f"🔧 Device detected: {device_info.get('manufacturer', 'Unknown')} {device_info.get('model', 'Device')}")
-    print(f"🖥️  Backend: http://localhost:8000")
-    print(f"🔌 WebSocket: ws://localhost:8000/ws")
-    print(f"📚 API Docs: http://localhost:8000/docs")
+    print(f"Device detected: {device_info.get('manufacturer', 'Unknown')} {device_info.get('model', 'Device')}")
+    print(f"Backend: http://localhost:8000")
+    print(f"WebSocket: ws://localhost:8000/ws")
+    print(f"API Docs: http://localhost:8000/docs")
     print("=" * 80)
     
     # Start IoT monitoring
     iot_manager.start_monitoring()
-    print("🔧 IoT sensors initialized")
+    print("IoT sensors initialized")
     
     # Start frontend automatically after a delay
     threading.Timer(3.0, start_frontend).start()

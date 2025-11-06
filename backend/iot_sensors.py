@@ -5,7 +5,8 @@ import json
 import threading
 from datetime import datetime
 from typing import Dict, Any, List
-import numpy as np
+import random
+import math
 
 class IoTSensorManager:
     def __init__(self):
@@ -76,10 +77,10 @@ class AccelerometerSensor:
         movement_factor = cpu_usage / 100.0
         
         return {
-            'x': self.baseline['x'] + np.random.uniform(-1, 1) * movement_factor,
-            'y': self.baseline['y'] + np.random.uniform(-1, 1) * movement_factor,
-            'z': self.baseline['z'] + np.random.uniform(-0.5, 0.5) * movement_factor,
-            'magnitude': np.sqrt(sum([v**2 for v in self.baseline.values()])),
+            'x': self.baseline['x'] + random.uniform(-1, 1) * movement_factor,
+            'y': self.baseline['y'] + random.uniform(-1, 1) * movement_factor,
+            'z': self.baseline['z'] + random.uniform(-0.5, 0.5) * movement_factor,
+            'magnitude': math.sqrt(sum([v**2 for v in self.baseline.values()])),
             'movement_detected': movement_factor > 0.5,
             'vibration_level': movement_factor,
             'status': 'active'
@@ -97,9 +98,9 @@ class GyroscopeSensor:
         rotation_factor = min(1.0, activity / 100)
         
         return {
-            'pitch': self.baseline['pitch'] + np.random.uniform(-5, 5) * rotation_factor,
-            'roll': self.baseline['roll'] + np.random.uniform(-5, 5) * rotation_factor,
-            'yaw': self.baseline['yaw'] + np.random.uniform(-10, 10) * rotation_factor,
+            'pitch': self.baseline['pitch'] + random.uniform(-5, 5) * rotation_factor,
+            'roll': self.baseline['roll'] + random.uniform(-5, 5) * rotation_factor,
+            'yaw': self.baseline['yaw'] + random.uniform(-10, 10) * rotation_factor,
             'angular_velocity': rotation_factor * 10,
             'stability': 1.0 - rotation_factor,
             'status': 'active'
@@ -117,17 +118,17 @@ class GPSSensor:
         uptime = time.time() - psutil.boot_time()
         
         # Small movement simulation
-        lat_offset = np.sin(uptime / 1000) * 0.001
-        lon_offset = np.cos(uptime / 1000) * 0.001
+        lat_offset = math.sin(uptime / 1000) * 0.001
+        lon_offset = math.cos(uptime / 1000) * 0.001
         
         return {
             'latitude': self.base_lat + lat_offset,
             'longitude': self.base_lon + lon_offset,
-            'altitude': self.altitude + np.random.uniform(-5, 5),
-            'speed': np.random.uniform(0, 60),  # km/h
-            'heading': np.random.uniform(0, 360),
-            'accuracy': np.random.uniform(1, 5),  # meters
-            'satellite_count': np.random.randint(8, 15),
+            'altitude': self.altitude + random.uniform(-5, 5),
+            'speed': random.uniform(0, 60),  # km/h
+            'heading': random.uniform(0, 360),
+            'accuracy': random.uniform(1, 5),  # meters
+            'satellite_count': random.randint(8, 15),
             'fix_quality': 'GPS_FIX',
             'status': 'active'
         }
@@ -173,13 +174,13 @@ class PressureSensor:
         return {
             'atmospheric_pressure': self.standard_pressure + pressure_variation,
             'tire_pressure': {
-                'front_left': 32 + np.random.uniform(-2, 2),
-                'front_right': 32 + np.random.uniform(-2, 2),
-                'rear_left': 30 + np.random.uniform(-2, 2),
-                'rear_right': 30 + np.random.uniform(-2, 2)
+                'front_left': 32 + random.uniform(-2, 2),
+                'front_right': 32 + random.uniform(-2, 2),
+                'rear_left': 30 + random.uniform(-2, 2),
+                'rear_right': 30 + random.uniform(-2, 2)
             },
-            'brake_pressure': 50 + np.random.uniform(-5, 5),
-            'fuel_pressure': 40 + np.random.uniform(-3, 3),
+            'brake_pressure': 50 + random.uniform(-5, 5),
+            'fuel_pressure': 40 + random.uniform(-3, 3),
             'status': 'active'
         }
 
@@ -195,18 +196,18 @@ class CameraSensor:
         return {
             'resolution': self.resolution,
             'fps': self.fps,
-            'exposure': np.random.uniform(1/60, 1/1000),
-            'iso': np.random.randint(100, 1600),
-            'focus_distance': np.random.uniform(0.5, 100),  # meters
-            'objects_detected': np.random.randint(0, 10),
+            'exposure': random.uniform(1/60, 1/1000),
+            'iso': random.randint(100, 1600),
+            'focus_distance': random.uniform(0.5, 100),  # meters
+            'objects_detected': random.randint(0, 10),
             'lane_detection': {
                 'left_lane': np.random.choice([True, False]),
                 'right_lane': np.random.choice([True, False]),
                 'lane_departure_warning': cpu_usage > 80
             },
-            'traffic_signs': np.random.randint(0, 3),
-            'pedestrians': np.random.randint(0, 5),
-            'vehicles': np.random.randint(0, 8),
+            'traffic_signs': random.randint(0, 3),
+            'pedestrians': random.randint(0, 5),
+            'vehicles': random.randint(0, 8),
             'image_quality': 'HIGH' if cpu_usage < 70 else 'MEDIUM',
             'status': 'active'
         }
@@ -223,14 +224,14 @@ class LiDARSensor:
         return {
             'range_max': self.range_max,
             'resolution': self.resolution,
-            'point_cloud_size': np.random.randint(10000, 100000),
-            'obstacles_detected': np.random.randint(0, 15),
-            'closest_obstacle': np.random.uniform(1, 50),  # meters
+            'point_cloud_size': random.randint(10000, 100000),
+            'obstacles_detected': random.randint(0, 15),
+            'closest_obstacle': random.uniform(1, 50),  # meters
             'scan_frequency': 10,  # Hz
-            'accuracy': np.random.uniform(0.02, 0.05),  # meters
+            'accuracy': random.uniform(0.02, 0.05),  # meters
             'environmental_mapping': {
-                'buildings': np.random.randint(0, 5),
-                'trees': np.random.randint(0, 10),
+                'buildings': random.randint(0, 5),
+                'trees': random.randint(0, 10),
                 'road_boundaries': True,
                 'terrain_type': np.random.choice(['URBAN', 'HIGHWAY', 'RURAL'])
             },
@@ -251,12 +252,12 @@ class RadarSensor:
         return {
             'frequency': self.frequency,
             'range_max': self.range_max,
-            'targets_detected': np.random.randint(0, 20),
-            'moving_targets': np.random.randint(0, 10),
-            'stationary_targets': np.random.randint(0, 15),
+            'targets_detected': random.randint(0, 20),
+            'moving_targets': random.randint(0, 10),
+            'stationary_targets': random.randint(0, 15),
             'doppler_data': {
-                'relative_velocity': np.random.uniform(-50, 50),  # km/h
-                'approach_rate': np.random.uniform(-10, 10)  # m/s
+                'relative_velocity': random.uniform(-50, 50),  # km/h
+                'approach_rate': random.uniform(-10, 10)  # m/s
             },
             'weather_penetration': np.random.choice(['EXCELLENT', 'GOOD', 'FAIR']),
             'interference_level': min(100, activity / 10),

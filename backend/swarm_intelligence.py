@@ -3,7 +3,8 @@ import time
 import threading
 from datetime import datetime, timedelta
 from typing import Dict, List, Any, Optional
-import numpy as np
+import random
+import math
 import psutil
 
 class SwarmVehicle:
@@ -11,9 +12,9 @@ class SwarmVehicle:
         self.vehicle_id = vehicle_id
         self.position = {'lat': lat, 'lon': lon}
         self.status = 'ACTIVE'
-        self.health_score = np.random.uniform(80, 95)
-        self.fuel_level = np.random.uniform(30, 90)
-        self.speed = np.random.uniform(20, 80)
+        self.health_score = random.uniform(80, 95)
+        self.fuel_level = random.uniform(30, 90)
+        self.speed = random.uniform(20, 80)
         self.destination = None
         self.route = []
         self.last_update = datetime.now()
@@ -88,17 +89,17 @@ class SwarmIntelligence:
         # Simulate vehicle movement and data collection
         for vehicle in self.vehicles.values():
             # Update position slightly
-            lat_change = np.random.uniform(-0.001, 0.001)
-            lon_change = np.random.uniform(-0.001, 0.001)
+            lat_change = random.uniform(-0.001, 0.001)
+            lon_change = random.uniform(-0.001, 0.001)
             
             new_lat = vehicle.position['lat'] + lat_change
             new_lon = vehicle.position['lon'] + lon_change
             vehicle.update_position(new_lat, new_lon)
             
             # Update vehicle metrics
-            vehicle.health_score = max(70, vehicle.health_score + np.random.uniform(-1, 1))
-            vehicle.fuel_level = max(10, vehicle.fuel_level + np.random.uniform(-0.5, 0.1))
-            vehicle.speed = max(0, min(120, vehicle.speed + np.random.uniform(-5, 5)))
+            vehicle.health_score = max(70, vehicle.health_score + random.uniform(-1, 1))
+            vehicle.fuel_level = max(10, vehicle.fuel_level + random.uniform(-0.5, 0.1))
+            vehicle.speed = max(0, min(120, vehicle.speed + random.uniform(-5, 5)))
             
             # Generate traffic data
             traffic_density = self._calculate_traffic_density(vehicle.position)
@@ -109,11 +110,11 @@ class SwarmIntelligence:
             })
             
             # Generate road condition data
-            road_quality = np.random.uniform(0.6, 1.0)
+            road_quality = random.uniform(0.6, 1.0)
             vehicle.share_road_conditions({
                 'surface_quality': road_quality,
-                'visibility': np.random.uniform(0.7, 1.0),
-                'weather_impact': np.random.choice(['NONE', 'LIGHT', 'MODERATE'])
+                'visibility': random.uniform(0.7, 1.0),
+                'weather_impact': random.choice(['NONE', 'LIGHT', 'MODERATE'])
             })
             
     def _calculate_traffic_density(self, position: Dict[str, float]) -> float:
@@ -135,7 +136,7 @@ class SwarmIntelligence:
         if 28.6 <= lat <= 28.65 and 77.2 <= lon <= 77.25:
             base_density += 0.2
             
-        return min(1.0, base_density + np.random.uniform(-0.1, 0.1))
+        return min(1.0, base_density + random.uniform(-0.1, 0.1))
         
     def _optimize_routes(self):
         # Swarm-based route optimization
@@ -186,7 +187,7 @@ class SwarmIntelligence:
                 traffic_data = vehicle.shared_data['traffic']['data']
                 traffic_scores.append(traffic_data.get('density', 0.5))
                 
-        return np.mean(traffic_scores) if traffic_scores else 0.5
+        return sum(traffic_scores) / len(traffic_scores) if traffic_scores else 0.5
         
     def _estimate_total_time(self, start: Dict[str, float], end: Dict[str, float]) -> float:
         # Estimate travel time in minutes
@@ -196,14 +197,14 @@ class SwarmIntelligence:
         
     def _calculate_distance(self, point1: Dict[str, float], point2: Dict[str, float]) -> float:
         # Haversine formula for distance calculation
-        lat1, lon1 = np.radians(point1['lat']), np.radians(point1['lon'])
-        lat2, lon2 = np.radians(point2['lat']), np.radians(point2['lon'])
+        lat1, lon1 = math.radians(point1['lat']), math.radians(point1['lon'])
+        lat2, lon2 = math.radians(point2['lat']), math.radians(point2['lon'])
         
         dlat = lat2 - lat1
         dlon = lon2 - lon1
         
-        a = np.sin(dlat/2)**2 + np.cos(lat1) * np.cos(lat2) * np.sin(dlon/2)**2
-        c = 2 * np.arcsin(np.sqrt(a))
+        a = math.sin(dlat/2)**2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon/2)**2
+        c = 2 * math.asin(math.sqrt(a))
         
         return 6371 * c  # Earth radius in km
         
@@ -239,8 +240,8 @@ class SwarmIntelligence:
         speeds = [data['data']['average_speed'] for data in traffic_data if 'average_speed' in data['data']]
         
         return {
-            'average_density': np.mean(densities) if densities else 0.5,
-            'average_speed': np.mean(speeds) if speeds else 40,
+            'average_density': sum(densities) / len(densities) if densities else 0.5,
+            'average_speed': sum(speeds) / len(speeds) if speeds else 40,
             'congestion_hotspots': self._identify_congestion_hotspots(traffic_data),
             'sample_size': len(traffic_data)
         }
@@ -253,8 +254,8 @@ class SwarmIntelligence:
         visibilities = [data['data']['visibility'] for data in road_data if 'visibility' in data['data']]
         
         return {
-            'average_surface_quality': np.mean(qualities) if qualities else 0.8,
-            'average_visibility': np.mean(visibilities) if visibilities else 0.9,
+            'average_surface_quality': sum(qualities) / len(qualities) if qualities else 0.8,
+            'average_visibility': sum(visibilities) / len(visibilities) if visibilities else 0.9,
             'weather_impacts': [data['data']['weather_impact'] for data in road_data if 'weather_impact' in data['data']],
             'sample_size': len(road_data)
         }
@@ -269,7 +270,7 @@ class SwarmIntelligence:
             hotspots.append({
                 'severity': 'HIGH',
                 'affected_vehicles': len(high_density_data),
-                'average_density': np.mean([data['data']['density'] for data in high_density_data])
+                'average_density': sum([data['data']['density'] for data in high_density_data]) / len(high_density_data)
             })
             
         return hotspots
