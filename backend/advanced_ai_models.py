@@ -1,4 +1,7 @@
-import numpy as np
+try:
+    import numpy as np
+except ImportError:
+    np = None
 from datetime import datetime, timedelta
 from typing import Dict, List, Any, Tuple
 import threading
@@ -48,18 +51,18 @@ class CollisionPredictionModel:
             time_risk = 0.1
         
         # Calculate collision probability
-        collision_prob = min(0.95, stress_factor + time_risk + np.random.uniform(-0.1, 0.1))
+        collision_prob = min(0.95, stress_factor + time_risk + random.uniform(-0.1, 0.1))
         
         # Determine risk level
         if collision_prob > 0.8:
             risk_level = "CRITICAL"
-            time_to_collision = np.random.uniform(1, 3)
+            time_to_collision = random.uniform(1, 3)
         elif collision_prob > 0.6:
             risk_level = "HIGH"
-            time_to_collision = np.random.uniform(3, 6)
+            time_to_collision = random.uniform(3, 6)
         elif collision_prob > 0.3:
             risk_level = "MEDIUM"
-            time_to_collision = np.random.uniform(6, 10)
+            time_to_collision = random.uniform(6, 10)
         else:
             risk_level = "LOW"
             time_to_collision = None
@@ -71,7 +74,7 @@ class CollisionPredictionModel:
             "time_to_collision": time_to_collision,
             "contributing_factors": self._analyze_factors(sensor_data),
             "recommended_actions": self._get_recommendations(risk_level),
-            "confidence": round(0.85 + np.random.uniform(-0.1, 0.1), 2),
+            "confidence": round(0.85 + random.uniform(-0.1, 0.1), 2),
             "prediction_timestamp": datetime.now().isoformat()
         }
         
@@ -156,8 +159,8 @@ class VehicleHealthModel:
                 "engine": round(engine_health, 1),
                 "battery": round(battery_health, 1),
                 "brakes": round(brake_health, 1),
-                "transmission": round(85 + np.random.uniform(-10, 10), 1),
-                "tires": round(90 + np.random.uniform(-15, 5), 1)
+                "transmission": round(85 + random.uniform(-10, 10), 1),
+                "tires": round(90 + random.uniform(-15, 5), 1)
             },
             "maintenance_prediction": maintenance_prediction,
             "health_trend": self._calculate_trend(),
@@ -181,24 +184,24 @@ class VehicleHealthModel:
                         return entries[0].current
         except:
             pass
-        return 45 + np.random.uniform(-5, 15)  # Fallback simulation
+        return 45 + random.uniform(-5, 15)  # Fallback simulation
     
     def _predict_maintenance(self, health_score: float, metrics: Dict[str, Any]) -> Dict[str, Any]:
         if health_score < 70:
             urgency = "URGENT"
-            days_until = np.random.randint(1, 7)
+            days_until = random.randint(1, 7)
         elif health_score < 85:
             urgency = "SOON"
-            days_until = np.random.randint(7, 30)
+            days_until = random.randint(7, 30)
         else:
             urgency = "ROUTINE"
-            days_until = np.random.randint(30, 90)
+            days_until = random.randint(30, 90)
             
         return {
             "urgency": urgency,
             "estimated_days": days_until,
             "recommended_services": self._get_service_recommendations(health_score),
-            "estimated_cost": np.random.randint(2000, 15000)
+            "estimated_cost": random.randint(2000, 15000)
         }
     
     def _get_service_recommendations(self, health_score: float) -> List[str]:
@@ -297,7 +300,7 @@ class DriverBehaviorModel:
         return {
             "pattern_type": pattern,
             "aggressiveness_score": score,
-            "consistency": round(np.random.uniform(0.6, 0.9), 2)
+            "consistency": round(random.uniform(0.6, 0.9), 2)
         }
     
     def _get_behavior_recommendations(self, alertness: float, stress: float, fatigue: float) -> List[str]:
@@ -357,7 +360,7 @@ class EmotionAnalysisModel:
         analysis = {
             "primary_emotion": primary_emotion,
             "emotion_intensity": round(intensity, 2),
-            "confidence": round(0.75 + np.random.uniform(-0.1, 0.15), 2),
+            "confidence": round(0.75 + random.uniform(-0.1, 0.15), 2),
             "secondary_emotions": self._detect_secondary_emotions(cpu_usage, memory_usage),
             "climate_recommendations": climate_recommendations,
             "comfort_adjustments": self._get_comfort_adjustments(primary_emotion),

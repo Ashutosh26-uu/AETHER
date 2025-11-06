@@ -14,24 +14,20 @@ import threading
 from pathlib import Path
 
 def print_banner():
-    banner = """
-    ╔══════════════════════════════════════════════════════════════════════════════╗
-    ║                                                                              ║
-    ║     🌐 AETHER: AI-Powered Satellite-Integrated Intelligent Mobility System  ║
-    ║                                                                              ║
-    ║     ✅ AI-Based Vehicle Health Monitoring                                    ║
-    ║     ✅ Predictive Accident Prevention System                                 ║
-    ║     ✅ AI-Integrated Navigation with Satellite Connectivity                  ║
-    ║     ✅ Smart Drone Assistance System                                         ║
-    ║     ✅ Real-Time Environmental Awareness                                     ║
-    ║     ✅ Predictive Traffic and Fuel Optimization                              ║
-    ║     ✅ AI Emergency Response & Safety Cloud                                  ║
-    ║     ✅ Driver Behavior & Emotion Analysis                                    ║
-    ║     ✅ Universal Fleet Management Dashboard                                  ║
-    ║                                                                              ║
-    ╚══════════════════════════════════════════════════════════════════════════════╝
-    """
-    print(banner)
+    print("=" * 80)
+    print("AETHER: AI-Powered Satellite-Integrated Intelligent Mobility System")
+    print("=" * 80)
+    print("Features:")
+    print("- AI-Based Vehicle Health Monitoring")
+    print("- Predictive Accident Prevention System")
+    print("- AI-Integrated Navigation with Satellite Connectivity")
+    print("- Smart Drone Assistance System")
+    print("- Real-Time Environmental Awareness")
+    print("- Predictive Traffic and Fuel Optimization")
+    print("- AI Emergency Response & Safety Cloud")
+    print("- Driver Behavior & Emotion Analysis")
+    print("- Universal Fleet Management Dashboard")
+    print("=" * 80)
 
 def check_dependencies():
     """Check if required dependencies are installed"""
