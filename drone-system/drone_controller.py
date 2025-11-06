@@ -29,111 +29,138 @@ class DroneController:
             return True
         except Exception as e:
             print(f"Failed to connect to drone: {e}")
+            self.is_connected = False
+            self.flight_mode = 'ERROR'
             return False
     
     def _initialize_systems(self):
-        self.sensor_data = {
-            'gps': {'status': 'active', 'satellites': 12},
-            'imu': {'status': 'active', 'calibrated': True},
-            'camera': {'status': 'active', 'resolution': (1920, 1080)},
-            'gimbal': {'status': 'active', 'stabilized': True}
-        }
+        try:
+            self.sensor_data = {
+                'gps': {'status': 'active', 'satellites': 12},
+                'imu': {'status': 'active', 'calibrated': True},
+                'camera': {'status': 'active', 'resolution': (1920, 1080)},
+                'gimbal': {'status': 'active', 'stabilized': True}
+            }
+        except Exception as e:
+            print(f"System initialization failed: {e}")
+            self.sensor_data = {}
     
     def takeoff(self, altitude: float = 10) -> bool:
-        if not self.is_connected:
-            print("Drone not connected")
+        try:
+            if not self.is_connected:
+                print("Drone not connected")
+                return False
+            
+            if altitude > self.max_altitude:
+                print(f"Altitude {altitude}m exceeds maximum {self.max_altitude}m")
+                return False
+            
+            print(f"Taking off to {altitude}m...")
+            self.flight_mode = 'TAKEOFF'
+            
+            for alt in range(0, int(altitude) + 1):
+                self.current_position['alt'] = alt
+                time.sleep(0.1)
+            
+            self.flight_mode = 'HOVER'
+            self.is_flying = True
+            print(f"Takeoff complete. Hovering at {altitude}m")
+            return True
+        except Exception as e:
+            print(f"Takeoff failed: {e}")
+            self.flight_mode = 'ERROR'
             return False
-        
-        if altitude > self.max_altitude:
-            print(f"Altitude {altitude}m exceeds maximum {self.max_altitude}m")
-            return False
-        
-        print(f"Taking off to {altitude}m...")
-        self.flight_mode = 'TAKEOFF'
-        
-        for alt in range(0, int(altitude) + 1):
-            self.current_position['alt'] = alt
-            time.sleep(0.1)
-        
-        self.flight_mode = 'HOVER'
-        self.is_flying = True
-        print(f"Takeoff complete. Hovering at {altitude}m")
-        return True
     
     def land(self) -> bool:
-        if not self.is_flying:
-            print("Drone is not flying")
+        try:
+            if not self.is_flying:
+                print("Drone is not flying")
+                return False
+            
+            print("Landing...")
+            self.flight_mode = 'LANDING'
+            
+            current_alt = self.current_position['alt']
+            for alt in range(int(current_alt), -1, -1):
+                self.current_position['alt'] = alt
+                time.sleep(0.1)
+            
+            self.flight_mode = 'LANDED'
+            self.is_flying = False
+            print("Landing complete")
+            return True
+        except Exception as e:
+            print(f"Landing failed: {e}")
+            self.flight_mode = 'ERROR'
             return False
-        
-        print("Landing...")
-        self.flight_mode = 'LANDING'
-        
-        current_alt = self.current_position['alt']
-        for alt in range(int(current_alt), -1, -1):
-            self.current_position['alt'] = alt
-            time.sleep(0.1)
-        
-        self.flight_mode = 'LANDED'
-        self.is_flying = False
-        print("Landing complete")
-        return True
     
     def goto_position(self, lat: float, lon: float, alt: float = None) -> bool:
-        if not self.is_flying:
-            print("Drone must be flying to move")
+        try:
+            if not self.is_flying:
+                print("Drone must be flying to move")
+                return False
+            
+            if alt is None:
+                alt = self.current_position['alt']
+            
+            distance = self._calculate_distance(
+                (self.current_position['lat'], self.current_position['lon']),
+                (lat, lon)
+            )
+            
+            if distance > self.max_range / 1000:
+                print(f"Target position {distance:.2f}km exceeds maximum range {self.max_range/1000}km")
+                return False
+            
+            print(f"Flying to position: {lat}, {lon}, {alt}m")
+            self.flight_mode = 'WAYPOINT'
+            
+            steps = 20
+            lat_step = (lat - self.current_position['lat']) / steps
+            lon_step = (lon - self.current_position['lon']) / steps
+            alt_step = (alt - self.current_position['alt']) / steps
+            
+            for i in range(steps + 1):
+                self.current_position['lat'] += lat_step
+                self.current_position['lon'] += lon_step
+                self.current_position['alt'] += alt_step
+                time.sleep(0.2)
+            
+            self.flight_mode = 'HOVER'
+            print(f"Arrived at destination: {lat}, {lon}, {alt}m")
+            return True
+        except Exception as e:
+            print(f"Navigation failed: {e}")
+            self.flight_mode = 'ERROR'
             return False
-        
-        if alt is None:
-            alt = self.current_position['alt']
-        
-        distance = self._calculate_distance(
-            (self.current_position['lat'], self.current_position['lon']),
-            (lat, lon)
-        )
-        
-        if distance > self.max_range / 1000:
-            print(f"Target position {distance:.2f}km exceeds maximum range {self.max_range/1000}km")
-            return False
-        
-        print(f"Flying to position: {lat}, {lon}, {alt}m")
-        self.flight_mode = 'WAYPOINT'
-        
-        steps = 20
-        lat_step = (lat - self.current_position['lat']) / steps
-        lon_step = (lon - self.current_position['lon']) / steps
-        alt_step = (alt - self.current_position['alt']) / steps
-        
-        for i in range(steps + 1):
-            self.current_position['lat'] += lat_step
-            self.current_position['lon'] += lon_step
-            self.current_position['alt'] += alt_step
-            time.sleep(0.2)
-        
-        self.flight_mode = 'HOVER'
-        print(f"Arrived at destination: {lat}, {lon}, {alt}m")
-        return True
     
     def _calculate_distance(self, pos1: Tuple[float, float], pos2: Tuple[float, float]) -> float:
-        lat1, lon1 = pos1
-        lat2, lon2 = pos2
-        R = 6371
-        dlat = math.radians(lat2 - lat1)
-        dlon = math.radians(lon2 - lon1)
-        a = (math.sin(dlat/2) * math.sin(dlat/2) + 
-             math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * 
-             math.sin(dlon/2) * math.sin(dlon/2))
-        c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
-        return R * c
+        try:
+            lat1, lon1 = pos1
+            lat2, lon2 = pos2
+            R = 6371
+            dlat = math.radians(lat2 - lat1)
+            dlon = math.radians(lon2 - lon1)
+            a = (math.sin(dlat/2) * math.sin(dlat/2) + 
+                 math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * 
+                 math.sin(dlon/2) * math.sin(dlon/2))
+            c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
+            return R * c
+        except Exception:
+            return 0.0
     
 
     
     def get_status(self) -> Dict[str, any]:
-        return {
-            'drone_id': self.drone_id,
-            'connected': self.is_connected,
-            'flying': self.is_flying,
-            'position': self.current_position,
-            'battery': self.battery_level,
-            'flight_mode': self.flight_mode,
-            'sensor_data': self.sensor_data
-        }
+        try:
+            return {
+                'drone_id': self.drone_id,
+                'connected': self.is_connected,
+                'flying': self.is_flying,
+                'position': self.current_position,
+                'battery': self.battery_level,
+                'flight_mode': self.flight_mode,
+                'sensor_data': self.sensor_data
+            }
+        except Exception:
+            return {'error': 'Status unavailable'}

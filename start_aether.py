@@ -60,18 +60,18 @@ def check_dependencies():
         try:
             subprocess.check_call([
                 sys.executable, "-m", "pip", "install", "-r", "requirements.txt"
-            ])
+            ], timeout=300)
             print("✅ Dependencies installed successfully!")
-        except subprocess.CalledProcessError:
-            print("❌ Failed to install dependencies. Please run: pip install -r requirements.txt")
+        except (subprocess.CalledProcessError, subprocess.TimeoutExpired) as e:
+            print(f"❌ Failed to install dependencies: {e}")
             return False
     
     # Check Node.js and npm for frontend
     try:
-        subprocess.run(["node", "--version"], check=True, capture_output=True)
-        subprocess.run(["npm", "--version"], check=True, capture_output=True)
+        subprocess.run(["node", "--version"], check=True, capture_output=True, timeout=10)
+        subprocess.run(["npm", "--version"], check=True, capture_output=True, timeout=10)
         print("  ✅ Node.js and npm")
-    except (subprocess.CalledProcessError, FileNotFoundError):
+    except (subprocess.CalledProcessError, FileNotFoundError, subprocess.TimeoutExpired):
         print("  ❌ Node.js/npm not found. Please install Node.js")
         return False
     
@@ -90,11 +90,12 @@ def install_frontend_dependencies():
             ["npm", "install"], 
             cwd=frontend_path, 
             check=True,
-            capture_output=True
+            capture_output=True,
+            timeout=300
         )
         print("✅ Frontend dependencies installed!")
         return True
-    except subprocess.CalledProcessError as e:
+    except (subprocess.CalledProcessError, subprocess.TimeoutExpired) as e:
         print(f"❌ Failed to install frontend dependencies: {e}")
         return False
 
@@ -188,11 +189,19 @@ def monitor_processes(backend_process, frontend_process):
         print("\n🛑 Shutting down AETHER system...")
         
         if backend_process:
-            backend_process.terminate()
+            try:
+                backend_process.terminate()
+                backend_process.wait(timeout=5)
+            except subprocess.TimeoutExpired:
+                backend_process.kill()
             print("✅ Backend stopped")
             
         if frontend_process:
-            frontend_process.terminate()
+            try:
+                frontend_process.terminate()
+                frontend_process.wait(timeout=5)
+            except subprocess.TimeoutExpired:
+                frontend_process.kill()
             print("✅ Frontend stopped")
             
         print("👋 AETHER system shutdown complete!")

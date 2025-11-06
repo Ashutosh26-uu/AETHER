@@ -62,6 +62,9 @@ function SafeDynamicDashboard() {
     { id: 'drone', label: '🚁 Drone System', icon: '🚁' },
     { id: 'navigation', label: '🗺️ Navigation', icon: '🗺️' },
     { id: 'environmental', label: '🌍 Environment', icon: '🌍' },
+    { id: 'iot', label: '📡 IoT Sensors', icon: '📡' },
+    { id: 'blockchain', label: '🔐 Blockchain', icon: '🔐' },
+    { id: 'swarm', label: '🤖 Swarm Intel', icon: '🤖' },
     { id: 'fleet', label: '🚛 Fleet Management', icon: '🚛' },
     { id: 'emergency', label: '🚨 Emergency', icon: '🚨' }
   ];
@@ -120,6 +123,10 @@ function SafeDynamicDashboard() {
   const navigation = aether_data?.navigation || {};
   const emergencyAlerts = aether_data?.emergency_alerts || [];
   const fleetData = aether_data?.fleet_management || {};
+  const iotData = aether_data?.iot_sensors || {};
+  const blockchainData = aether_data?.blockchain_security || {};
+  const quantumData = aether_data?.quantum_encryption || {};
+  const swarmData = aether_data?.swarm_intelligence || {};
 
   return (
     <div style={{ 
@@ -242,6 +249,10 @@ function SafeDynamicDashboard() {
                   <div>AI Status: <span style={{ color: '#10B981', fontWeight: 'bold' }}>Active</span></div>
                   <div>Drone: <span style={{ color: droneStatus.status === 'ACTIVE' ? '#10B981' : '#F59E0B', fontWeight: 'bold' }}>{droneStatus.status || 'N/A'}</span></div>
                   <div>Satellites: <span style={{ color: '#10B981', fontWeight: 'bold' }}>{navigation.satellite_connectivity?.satellite_count || 'N/A'}</span></div>
+                  <div>Blockchain: <span style={{ color: blockchainData.chain_integrity ? '#10B981' : '#EF4444', fontWeight: 'bold' }}>{blockchainData.chain_integrity ? 'Secure' : 'Error'}</span></div>
+                  <div>IoT Sensors: <span style={{ color: '#10B981', fontWeight: 'bold' }}>{Object.keys(iotData).length - 2 || 0} Active</span></div>
+                  <div>Swarm Intel: <span style={{ color: '#10B981', fontWeight: 'bold' }}>{swarmData.active_vehicles || 0} Vehicles</span></div>
+                  <div>Quantum Secure: <span style={{ color: quantumData.quantum_encryption_active ? '#10B981' : '#EF4444', fontWeight: 'bold' }}>{quantumData.quantum_encryption_active ? 'Active' : 'Inactive'}</span></div>
                 </div>
               </div>
 
@@ -682,6 +693,276 @@ function SafeDynamicDashboard() {
           </div>
         )}
 
+        {activeTab === 'iot' && (
+          <div className="animate-fadeIn">
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
+              
+              {/* Accelerometer */}
+              <div className="card-hover" style={{ 
+                background: 'rgba(255,255,255,0.1)', 
+                padding: '25px', 
+                borderRadius: '20px', 
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255,255,255,0.2)'
+              }}>
+                <h3 style={{ margin: '0 0 20px 0', fontSize: '1.4em' }}>📱 Accelerometer</h3>
+                <div style={{ fontSize: '0.9em' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <span>X-Axis:</span>
+                    <span style={{ fontWeight: 'bold' }}>{iotData.accelerometer?.x?.toFixed(2) || 'N/A'} m/s²</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <span>Y-Axis:</span>
+                    <span style={{ fontWeight: 'bold' }}>{iotData.accelerometer?.y?.toFixed(2) || 'N/A'} m/s²</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <span>Z-Axis:</span>
+                    <span style={{ fontWeight: 'bold' }}>{iotData.accelerometer?.z?.toFixed(2) || 'N/A'} m/s²</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span>Movement:</span>
+                    <span style={{ fontWeight: 'bold', color: iotData.accelerometer?.movement_detected ? '#F59E0B' : '#10B981' }}>
+                      {iotData.accelerometer?.movement_detected ? 'Detected' : 'Stable'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* GPS Sensor */}
+              <div className="card-hover" style={{ 
+                background: 'rgba(255,255,255,0.1)', 
+                padding: '25px', 
+                borderRadius: '20px', 
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255,255,255,0.2)'
+              }}>
+                <h3 style={{ margin: '0 0 20px 0', fontSize: '1.4em' }}>🛰️ GPS Sensor</h3>
+                <div style={{ fontSize: '0.9em' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <span>Latitude:</span>
+                    <span style={{ fontWeight: 'bold' }}>{iotData.gps?.latitude?.toFixed(4) || 'N/A'}°</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <span>Longitude:</span>
+                    <span style={{ fontWeight: 'bold' }}>{iotData.gps?.longitude?.toFixed(4) || 'N/A'}°</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <span>Speed:</span>
+                    <span style={{ fontWeight: 'bold' }}>{iotData.gps?.speed?.toFixed(1) || 'N/A'} km/h</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span>Accuracy:</span>
+                    <span style={{ fontWeight: 'bold', color: '#10B981' }}>{iotData.gps?.accuracy?.toFixed(1) || 'N/A'}m</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Temperature Sensors */}
+              <div className="card-hover" style={{ 
+                background: 'rgba(255,255,255,0.1)', 
+                padding: '25px', 
+                borderRadius: '20px', 
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255,255,255,0.2)'
+              }}>
+                <h3 style={{ margin: '0 0 20px 0', fontSize: '1.4em' }}>🌡️ Temperature</h3>
+                <div style={{ fontSize: '0.9em' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <span>Engine:</span>
+                    <span style={{ fontWeight: 'bold', color: (iotData.temperature?.engine_temp || 0) > 85 ? '#EF4444' : '#10B981' }}>
+                      {iotData.temperature?.engine_temp?.toFixed(1) || 'N/A'}°C
+                    </span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <span>Ambient:</span>
+                    <span style={{ fontWeight: 'bold' }}>{iotData.temperature?.ambient_temp?.toFixed(1) || 'N/A'}°C</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <span>Battery:</span>
+                    <span style={{ fontWeight: 'bold' }}>{iotData.temperature?.battery_temp?.toFixed(1) || 'N/A'}°C</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span>Status:</span>
+                    <span style={{ fontWeight: 'bold', color: '#10B981' }}>{iotData.temperature?.status || 'N/A'}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Camera Sensor */}
+              <div className="card-hover" style={{ 
+                background: 'rgba(255,255,255,0.1)', 
+                padding: '25px', 
+                borderRadius: '20px', 
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255,255,255,0.2)'
+              }}>
+                <h3 style={{ margin: '0 0 20px 0', fontSize: '1.4em' }}>📹 Camera System</h3>
+                <div style={{ fontSize: '0.9em' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <span>Resolution:</span>
+                    <span style={{ fontWeight: 'bold' }}>{iotData.camera?.resolution?.width || 'N/A'}x{iotData.camera?.resolution?.height || 'N/A'}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <span>Objects:</span>
+                    <span style={{ fontWeight: 'bold' }}>{iotData.camera?.objects_detected || 0}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <span>Vehicles:</span>
+                    <span style={{ fontWeight: 'bold' }}>{iotData.camera?.vehicles || 0}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span>Quality:</span>
+                    <span style={{ fontWeight: 'bold', color: '#10B981' }}>{iotData.camera?.image_quality || 'N/A'}</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'blockchain' && (
+          <div className="animate-fadeIn">
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
+              
+              {/* Blockchain Status */}
+              <div className="card-hover" style={{ 
+                background: 'rgba(255,255,255,0.1)', 
+                padding: '25px', 
+                borderRadius: '20px', 
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255,255,255,0.2)'
+              }}>
+                <h3 style={{ margin: '0 0 20px 0', fontSize: '1.4em' }}>🔐 Blockchain Security</h3>
+                <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+                  <div style={{ fontSize: '3em', marginBottom: '10px' }}>
+                    {blockchainData.chain_integrity ? '🟢' : '🔴'}
+                  </div>
+                  <div style={{ fontSize: '1.2em', fontWeight: 'bold' }}>
+                    {blockchainData.chain_integrity ? 'SECURE' : 'COMPROMISED'}
+                  </div>
+                </div>
+                <div style={{ fontSize: '0.9em' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <span>Total Blocks:</span>
+                    <span style={{ fontWeight: 'bold' }}>{blockchainData.total_blocks || 0}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <span>Security Level:</span>
+                    <span style={{ fontWeight: 'bold', color: '#10B981' }}>{blockchainData.security_level || 'N/A'}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span>Tamper Proof:</span>
+                    <span style={{ fontWeight: 'bold', color: blockchainData.data_tamper_proof ? '#10B981' : '#EF4444' }}>
+                      {blockchainData.data_tamper_proof ? 'YES' : 'NO'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Quantum Encryption */}
+              <div className="card-hover" style={{ 
+                background: 'rgba(255,255,255,0.1)', 
+                padding: '25px', 
+                borderRadius: '20px', 
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255,255,255,0.2)'
+              }}>
+                <h3 style={{ margin: '0 0 20px 0', fontSize: '1.4em' }}>⚛️ Quantum Encryption</h3>
+                <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+                  <div style={{ fontSize: '3em', marginBottom: '10px' }}>
+                    {quantumData.quantum_encryption_active ? '🔒' : '🔓'}
+                  </div>
+                  <div style={{ fontSize: '1.2em', fontWeight: 'bold' }}>
+                    {quantumData.quantum_encryption_active ? 'ACTIVE' : 'INACTIVE'}
+                  </div>
+                </div>
+                <div style={{ fontSize: '0.9em' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <span>Encryption:</span>
+                    <span style={{ fontWeight: 'bold' }}>{quantumData.encryption_strength || 'N/A'}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <span>Key Rotation:</span>
+                    <span style={{ fontWeight: 'bold' }}>{quantumData.key_rotation_interval || 'N/A'}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span>Quantum Resistant:</span>
+                    <span style={{ fontWeight: 'bold', color: quantumData.quantum_resistance ? '#10B981' : '#EF4444' }}>
+                      {quantumData.quantum_resistance ? 'YES' : 'NO'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'swarm' && (
+          <div className="animate-fadeIn">
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
+              
+              {/* Swarm Status */}
+              <div className="card-hover" style={{ 
+                background: 'rgba(255,255,255,0.1)', 
+                padding: '25px', 
+                borderRadius: '20px', 
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255,255,255,0.2)'
+              }}>
+                <h3 style={{ margin: '0 0 20px 0', fontSize: '1.4em' }}>🤖 Swarm Intelligence</h3>
+                <div style={{ fontSize: '0.9em' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <span>Total Vehicles:</span>
+                    <span style={{ fontWeight: 'bold' }}>{swarmData.total_vehicles || 0}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <span>Active Vehicles:</span>
+                    <span style={{ fontWeight: 'bold', color: '#10B981' }}>{swarmData.active_vehicles || 0}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <span>Coordination:</span>
+                    <span style={{ fontWeight: 'bold' }}>{swarmData.coordination_efficiency?.toFixed(1) || 'N/A'}%</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span>Data Sharing:</span>
+                    <span style={{ fontWeight: 'bold' }}>{swarmData.data_sharing_rate?.toFixed(1) || 'N/A'}%</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Collective Intelligence */}
+              <div className="card-hover" style={{ 
+                background: 'rgba(255,255,255,0.1)', 
+                padding: '25px', 
+                borderRadius: '20px', 
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255,255,255,0.2)'
+              }}>
+                <h3 style={{ margin: '0 0 20px 0', fontSize: '1.4em' }}>🧠 Collective Intelligence</h3>
+                <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+                  <div style={{ fontSize: '2.5em', fontWeight: 'bold', color: '#10B981' }}>
+                    {swarmData.collective_intelligence_score?.toFixed(1) || 'N/A'}%
+                  </div>
+                  <div style={{ fontSize: '0.9em', opacity: 0.8 }}>Intelligence Score</div>
+                </div>
+                <div style={{ fontSize: '0.9em' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <span>Knowledge Quality:</span>
+                    <span style={{ fontWeight: 'bold' }}>{swarmData.shared_knowledge_quality?.toFixed(1) || 'N/A'}%</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span>Swarm Groups:</span>
+                    <span style={{ fontWeight: 'bold' }}>{swarmData.swarm_groups || 0}</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        )}
+
         {activeTab === 'emergency' && (
           <div className="animate-fadeIn">
             <div style={{ 
@@ -742,6 +1023,24 @@ function SafeDynamicDashboard() {
                   <div style={{ fontSize: '4em', marginBottom: '20px' }}>✅</div>
                   <h3 style={{ marginBottom: '10px' }}>All Systems Normal</h3>
                   <p style={{ opacity: 0.8 }}>No emergency alerts detected. All safety systems are operational.</p>
+              <div style={{ marginTop: '20px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
+                <div style={{ background: 'rgba(16, 185, 129, 0.2)', padding: '15px', borderRadius: '10px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '1.5em', marginBottom: '5px' }}>🔐</div>
+                  <div style={{ fontSize: '0.9em' }}>Blockchain Secure</div>
+                </div>
+                <div style={{ background: 'rgba(59, 130, 246, 0.2)', padding: '15px', borderRadius: '10px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '1.5em', marginBottom: '5px' }}>🛰️</div>
+                  <div style={{ fontSize: '0.9em' }}>Satellite Connected</div>
+                </div>
+                <div style={{ background: 'rgba(139, 92, 246, 0.2)', padding: '15px', borderRadius: '10px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '1.5em', marginBottom: '5px' }}>🤖</div>
+                  <div style={{ fontSize: '0.9em' }}>AI Monitoring</div>
+                </div>
+                <div style={{ background: 'rgba(245, 158, 11, 0.2)', padding: '15px', borderRadius: '10px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '1.5em', marginBottom: '5px' }}>📡</div>
+                  <div style={{ fontSize: '0.9em' }}>IoT Active</div>
+                </div>
+              </div>
                 </div>
               )}
             </div>

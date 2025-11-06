@@ -6,10 +6,15 @@ const AutoBackendStarter = ({ onBackendReady }) => {
 
   const checkBackend = async () => {
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
+      
       const response = await fetch('http://localhost:8000/api/dynamic/device-info', {
         method: 'GET',
-        timeout: 5000
+        signal: controller.signal
       });
+      
+      clearTimeout(timeoutId);
       
       if (response.ok) {
         setBackendStatus('ready');
@@ -24,8 +29,15 @@ const AutoBackendStarter = ({ onBackendReady }) => {
 
   const startBackend = async () => {
     try {
-      // Try to start backend via API call to a startup endpoint
-      await fetch('http://localhost:8000/startup', { method: 'POST' });
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 3000);
+      
+      await fetch('http://localhost:8000/startup', { 
+        method: 'POST',
+        signal: controller.signal
+      });
+      
+      clearTimeout(timeoutId);
     } catch (error) {
       console.log('Could not auto-start backend');
     }
@@ -199,7 +211,11 @@ const AutoBackendStarter = ({ onBackendReady }) => {
               <div style={{ color: '#3B82F6' }}>$ python universal_backend.py</div>
             </div>
             <button
-              onClick={() => window.location.reload()}
+              onClick={() => {
+                setBackendStatus('checking');
+                setAttempts(0);
+                window.location.reload();
+              }}
               style={{
                 marginTop: '25px',
                 padding: '12px 25px',
