@@ -1,5 +1,4 @@
 import numpy as np
-import cv2
 from datetime import datetime, timedelta
 from typing import Dict, List, Any, Tuple
 import threading

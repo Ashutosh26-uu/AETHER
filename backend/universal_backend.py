@@ -23,6 +23,7 @@ from real_time_weather import weather_service
 from advanced_ai_models import ai_predictor
 from iot_sensors import iot_manager
 from swarm_intelligence import swarm_intelligence
+from device_info import device_manager
 
 app = FastAPI(title="AETHER: AI-Powered Satellite-Integrated Intelligent Mobility System")
 
@@ -347,15 +348,16 @@ def get_real_time_metrics():
             'processes': len(psutil.pids()),
             'boot_time': psutil.boot_time()
         }
-    except Exception as e:
+    except Exception:
         return {
-            'cpu_usage': random.uniform(20, 80),
-            'memory_usage': random.uniform(30, 70),
-            'disk_usage': random.uniform(40, 85),
-            'network_sent': random.randint(1000000, 10000000),
-            'network_recv': random.randint(1000000, 10000000),
-            'processes': random.randint(100, 300),
-            'boot_time': time.time() - random.randint(3600, 86400)
+            'cpu_usage': 0,
+            'memory_usage': 0,
+            'disk_usage': 0,
+            'network_sent': 0,
+            'network_recv': 0,
+            'processes': 0,
+            'boot_time': 0,
+            'error': 'Metrics unavailable'
         }
 
 aether_core = AETHERCore()
@@ -384,7 +386,7 @@ manager = ConnectionManager()
 async def get_comprehensive_system_data():
     """Get all AETHER system data including vehicle, drone, AI predictions, and environmental data"""
     try:
-        device_info = detect_device_info()
+        device_info = device_manager.get_system_summary()
         real_time_metrics = get_real_time_metrics()
         
         # Get enhanced vehicle health with AI analysis
@@ -408,7 +410,8 @@ async def get_comprehensive_system_data():
             'blockchain_security': aether_core.get_blockchain_status(),
             'quantum_encryption': aether_core.get_quantum_status(),
             'iot_sensors': iot_data,
-            'swarm_intelligence': swarm_data
+            'swarm_intelligence': swarm_data,
+            'device_information': device_manager.get_device_info()
         }
         
         return {
@@ -425,8 +428,8 @@ async def get_comprehensive_system_data():
         return {
             'timestamp': datetime.now().isoformat(),
             'dynamic_system': {
-                'device_type': 'laptop',
-                'device_info': detect_device_info(),
+                'device_type': device_manager.get_system_summary().get('device_type', 'Unknown'),
+                'device_info': device_manager.get_system_summary(),
                 'real_time_metrics': get_real_time_metrics()
             },
             'aether_data': {}
@@ -434,7 +437,7 @@ async def get_comprehensive_system_data():
 
 @app.get("/")
 async def root():
-    device_info = detect_device_info()
+    device_info = device_manager.get_system_summary()
     return HTMLResponse(f"""
     <html>
         <head><title>AETHER System</title></head>
@@ -474,7 +477,7 @@ async def root():
 # API Endpoints
 @app.get("/api/dynamic/device-info")
 async def get_device_info():
-    return detect_device_info()
+    return device_manager.get_system_summary()
 
 @app.get("/api/dynamic/metrics")
 async def get_metrics():
@@ -558,6 +561,18 @@ async def stop_iot_monitoring():
     iot_manager.stop_monitoring()
     return {'status': 'IoT monitoring stopped'}
 
+@app.get("/api/aether/device-info")
+async def get_device_info():
+    return device_manager.get_device_info()
+
+@app.get("/api/aether/device-summary")
+async def get_device_summary():
+    return device_manager.get_system_summary()
+
+@app.post("/api/aether/refresh-device-info")
+async def refresh_device_info():
+    return device_manager.refresh_device_info()
+
 @app.post("/api/aether/emergency-alert")
 async def trigger_emergency_alert(alert_data: dict):
     alert = {
@@ -613,7 +628,7 @@ def start_frontend():
 if __name__ == "__main__":
     print("🌐 Starting AETHER: AI-Powered Satellite-Integrated Intelligent Mobility System")
     print("=" * 80)
-    device_info = detect_device_info()
+    device_info = device_manager.get_system_summary()
     print(f"🔧 Device detected: {device_info.get('manufacturer', 'Unknown')} {device_info.get('model', 'Device')}")
     print(f"🖥️  Backend: http://localhost:8000")
     print(f"🔌 WebSocket: ws://localhost:8000/ws")

@@ -39,16 +39,13 @@ def check_dependencies():
     
     # Check Python packages
     required_packages = [
-        'fastapi', 'uvicorn', 'psutil', 'requests', 'numpy', 'cv2'
+        'fastapi', 'uvicorn', 'psutil', 'requests', 'numpy'
     ]
     
     missing_packages = []
     for package in required_packages:
         try:
-            if package == 'cv2':
-                import cv2
-            else:
-                __import__(package)
+            __import__(package)
             print(f"  ✅ {package}")
         except ImportError:
             missing_packages.append(package)

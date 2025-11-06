@@ -57,6 +57,7 @@ function SafeDynamicDashboard() {
 
   const tabs = [
     { id: 'overview', label: '🏠 Overview', icon: '🏠' },
+    { id: 'device', label: '💻 Device Info', icon: '💻' },
     { id: 'vehicle', label: '🚗 Vehicle Health', icon: '🚗' },
     { id: 'ai', label: '🤖 AI Predictions', icon: '🤖' },
     { id: 'drone', label: '🚁 Drone System', icon: '🚁' },
@@ -127,6 +128,7 @@ function SafeDynamicDashboard() {
   const blockchainData = aether_data?.blockchain_security || {};
   const quantumData = aether_data?.quantum_encryption || {};
   const swarmData = aether_data?.swarm_intelligence || {};
+  const deviceData = aether_data?.device_information || {};
 
   return (
     <div style={{ 
@@ -253,6 +255,25 @@ function SafeDynamicDashboard() {
                   <div>IoT Sensors: <span style={{ color: '#10B981', fontWeight: 'bold' }}>{Object.keys(iotData).length - 2 || 0} Active</span></div>
                   <div>Swarm Intel: <span style={{ color: '#10B981', fontWeight: 'bold' }}>{swarmData.active_vehicles || 0} Vehicles</span></div>
                   <div>Quantum Secure: <span style={{ color: quantumData.quantum_encryption_active ? '#10B981' : '#EF4444', fontWeight: 'bold' }}>{quantumData.quantum_encryption_active ? 'Active' : 'Inactive'}</span></div>
+                  <div>Device Type: <span style={{ color: '#10B981', fontWeight: 'bold' }}>{deviceData.hardware?.battery?.percentage ? 'Laptop' : 'Desktop'}</span></div>
+                  <div>OS: <span style={{ color: '#10B981', fontWeight: 'bold' }}>{deviceData.system?.os || 'Unknown'}</span></div>
+                </div>
+              </div>
+
+              {/* Device Summary */}
+              <div className="card-hover" style={{ 
+                background: 'rgba(255,255,255,0.1)', 
+                padding: '25px', 
+                borderRadius: '20px', 
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255,255,255,0.2)'
+              }}>
+                <h3 style={{ margin: '0 0 20px 0', fontSize: '1.4em' }}>💻 Device Summary</h3>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', fontSize: '0.9em' }}>
+                  <div>CPU Usage: <span style={{ color: deviceData.hardware?.cpu?.total_usage > 80 ? '#EF4444' : '#10B981', fontWeight: 'bold' }}>{deviceData.hardware?.cpu?.total_usage || 'N/A'}%</span></div>
+                  <div>Memory: <span style={{ color: parseFloat(deviceData.hardware?.memory?.percentage) > 80 ? '#EF4444' : '#10B981', fontWeight: 'bold' }}>{deviceData.hardware?.memory?.percentage || 'N/A'}</span></div>
+                  <div>Disk Usage: <span style={{ color: parseFloat(deviceData.hardware?.disk?.main_disk?.percentage) > 80 ? '#EF4444' : '#10B981', fontWeight: 'bold' }}>{deviceData.hardware?.disk?.main_disk?.percentage || 'N/A'}</span></div>
+                  <div>Network: <span style={{ color: '#10B981', fontWeight: 'bold' }}>{deviceData.network?.ip_address || 'N/A'}</span></div>
                 </div>
               </div>
 
@@ -894,6 +915,200 @@ function SafeDynamicDashboard() {
                   </div>
                 </div>
               </div>
+
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'device' && (
+          <div className="animate-fadeIn">
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
+              
+              {/* System Information */}
+              <div className="card-hover" style={{ 
+                background: 'rgba(255,255,255,0.1)', 
+                padding: '25px', 
+                borderRadius: '20px', 
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255,255,255,0.2)'
+              }}>
+                <h3 style={{ margin: '0 0 20px 0', fontSize: '1.4em' }}>💻 System Information</h3>
+                <div style={{ fontSize: '0.9em' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <span>Operating System:</span>
+                    <span style={{ fontWeight: 'bold' }}>{deviceData.system?.os || 'N/A'}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <span>Architecture:</span>
+                    <span style={{ fontWeight: 'bold' }}>{deviceData.system?.architecture || 'N/A'}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <span>Hostname:</span>
+                    <span style={{ fontWeight: 'bold' }}>{deviceData.system?.hostname || 'N/A'}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <span>Python Version:</span>
+                    <span style={{ fontWeight: 'bold' }}>{deviceData.system?.python_version || 'N/A'}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span>Device ID:</span>
+                    <span style={{ fontWeight: 'bold', fontSize: '0.8em' }}>{deviceData.device_id?.substring(0, 20) || 'N/A'}...</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* CPU Information */}
+              <div className="card-hover" style={{ 
+                background: 'rgba(255,255,255,0.1)', 
+                padding: '25px', 
+                borderRadius: '20px', 
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255,255,255,0.2)'
+              }}>
+                <h3 style={{ margin: '0 0 20px 0', fontSize: '1.4em' }}>🔧 CPU Information</h3>
+                <div style={{ fontSize: '0.9em' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <span>Physical Cores:</span>
+                    <span style={{ fontWeight: 'bold' }}>{deviceData.hardware?.cpu?.physical_cores || 'N/A'}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <span>Logical Cores:</span>
+                    <span style={{ fontWeight: 'bold' }}>{deviceData.hardware?.cpu?.logical_cores || 'N/A'}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <span>Max Frequency:</span>
+                    <span style={{ fontWeight: 'bold' }}>{deviceData.hardware?.cpu?.max_frequency || 'N/A'}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span>Current Usage:</span>
+                    <span style={{ fontWeight: 'bold', color: deviceData.hardware?.cpu?.total_usage > 80 ? '#EF4444' : '#10B981' }}>
+                      {deviceData.hardware?.cpu?.total_usage || 'N/A'}%
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Memory Information */}
+              <div className="card-hover" style={{ 
+                background: 'rgba(255,255,255,0.1)', 
+                padding: '25px', 
+                borderRadius: '20px', 
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255,255,255,0.2)'
+              }}>
+                <h3 style={{ margin: '0 0 20px 0', fontSize: '1.4em' }}>🧠 Memory Information</h3>
+                <div style={{ fontSize: '0.9em' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <span>Total Memory:</span>
+                    <span style={{ fontWeight: 'bold' }}>{deviceData.hardware?.memory?.total || 'N/A'}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <span>Available:</span>
+                    <span style={{ fontWeight: 'bold' }}>{deviceData.hardware?.memory?.available || 'N/A'}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <span>Used:</span>
+                    <span style={{ fontWeight: 'bold' }}>{deviceData.hardware?.memory?.used || 'N/A'}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span>Usage:</span>
+                    <span style={{ fontWeight: 'bold', color: parseFloat(deviceData.hardware?.memory?.percentage) > 80 ? '#EF4444' : '#10B981' }}>
+                      {deviceData.hardware?.memory?.percentage || 'N/A'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Disk Information */}
+              <div className="card-hover" style={{ 
+                background: 'rgba(255,255,255,0.1)', 
+                padding: '25px', 
+                borderRadius: '20px', 
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255,255,255,0.2)'
+              }}>
+                <h3 style={{ margin: '0 0 20px 0', fontSize: '1.4em' }}>💾 Storage Information</h3>
+                <div style={{ fontSize: '0.9em' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <span>Total Space:</span>
+                    <span style={{ fontWeight: 'bold' }}>{deviceData.hardware?.disk?.main_disk?.total || 'N/A'}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <span>Used Space:</span>
+                    <span style={{ fontWeight: 'bold' }}>{deviceData.hardware?.disk?.main_disk?.used || 'N/A'}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <span>Free Space:</span>
+                    <span style={{ fontWeight: 'bold' }}>{deviceData.hardware?.disk?.main_disk?.free || 'N/A'}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span>Usage:</span>
+                    <span style={{ fontWeight: 'bold', color: parseFloat(deviceData.hardware?.disk?.main_disk?.percentage) > 80 ? '#EF4444' : '#10B981' }}>
+                      {deviceData.hardware?.disk?.main_disk?.percentage || 'N/A'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Network Information */}
+              <div className="card-hover" style={{ 
+                background: 'rgba(255,255,255,0.1)', 
+                padding: '25px', 
+                borderRadius: '20px', 
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255,255,255,0.2)'
+              }}>
+                <h3 style={{ margin: '0 0 20px 0', fontSize: '1.4em' }}>🌐 Network Information</h3>
+                <div style={{ fontSize: '0.9em' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <span>Hostname:</span>
+                    <span style={{ fontWeight: 'bold' }}>{deviceData.network?.hostname || 'N/A'}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <span>IP Address:</span>
+                    <span style={{ fontWeight: 'bold' }}>{deviceData.network?.ip_address || 'N/A'}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <span>Data Sent:</span>
+                    <span style={{ fontWeight: 'bold' }}>{deviceData.network?.io_stats?.bytes_sent || 'N/A'}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span>Data Received:</span>
+                    <span style={{ fontWeight: 'bold' }}>{deviceData.network?.io_stats?.bytes_recv || 'N/A'}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Battery Information */}
+              {deviceData.hardware?.battery && !deviceData.hardware.battery.error && (
+                <div className="card-hover" style={{ 
+                  background: 'rgba(255,255,255,0.1)', 
+                  padding: '25px', 
+                  borderRadius: '20px', 
+                  backdropFilter: 'blur(10px)',
+                  border: '1px solid rgba(255,255,255,0.2)'
+                }}>
+                  <h3 style={{ margin: '0 0 20px 0', fontSize: '1.4em' }}>🔋 Battery Information</h3>
+                  <div style={{ fontSize: '0.9em' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                      <span>Battery Level:</span>
+                      <span style={{ fontWeight: 'bold', color: parseFloat(deviceData.hardware.battery.percentage) < 20 ? '#EF4444' : '#10B981' }}>
+                        {deviceData.hardware.battery.percentage || 'N/A'}
+                      </span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                      <span>Power Source:</span>
+                      <span style={{ fontWeight: 'bold' }}>
+                        {deviceData.hardware.battery.plugged_in ? 'AC Power' : 'Battery'}
+                      </span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span>Time Remaining:</span>
+                      <span style={{ fontWeight: 'bold' }}>{deviceData.hardware.battery.time_left || 'N/A'}</span>
+                    </div>
+                  </div>
+                </div>
+              )}
 
             </div>
           </div>
